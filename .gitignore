@@ -1,28 +1,38 @@
-# Virtual environments
+# -----------------------------
+# Virtual Environments
+# -----------------------------
 venv/
 .venv/
 env/
 ENV/
 
-# Python cache
+# -----------------------------
+# Python
+# -----------------------------
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
 
-# Distribution / packaging
+# -----------------------------
+# Build & Distribution
+# -----------------------------
 build/
 dist/
 *.egg-info/
 .eggs/
+pip-wheel-metadata/
 
-# Installer logs
+# -----------------------------
+# Logs
+# -----------------------------
+*.log
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# -----------------------------
+# Testing & Coverage
+# -----------------------------
 .pytest_cache/
 .coverage
 .coverage.*
@@ -30,34 +40,51 @@ htmlcov/
 .tox/
 .nox/
 
-# Jupyter Notebook
+# -----------------------------
+# Jupyter Notebooks
+# -----------------------------
 .ipynb_checkpoints/
 
-# IDEs
+# -----------------------------
+# IDEs & Editors
+# -----------------------------
 .vscode/
 .idea/
 
-# OS files
+# -----------------------------
+# Operating System Files
+# -----------------------------
 .DS_Store
 Thumbs.db
 
-# Environment variables
+# -----------------------------
+# Environment Variables
+# -----------------------------
 .env
 .env.*
 
-# Type checkers 
+# -----------------------------
+# Type Checkers & Linters
+# -----------------------------
 .mypy_cache/
 .pyre/
 .pytype/
-
-# Ruff
+.pyright/
 .ruff_cache/
 
-# Pyright
-.pyright/
-
-# Pandas output (optional)
-*.csv
-*.xlsx
+# -----------------------------
+# Data Files (Generated)
+# -----------------------------
 *.parquet
 *.feather
+
+# Uncomment if CSV/Excel files are generated outputs.
+# Keep commented if they are part of your project data.
+# *.csv
+# *.xlsx
+
+# -----------------------------
+# Streamlit
+# -----------------------------
+.streamlit/secrets.toml
+.streamlit/.cache/
