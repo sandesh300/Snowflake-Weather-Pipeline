@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
-CITY = os.getenv("CITY")
+CITIES = os.getenv("CITIES", "").split(",")   # returns list like ["Pune", "Mumbai", ...]
+# Strip whitespace just in case
+CITIES = [city.strip() for city in CITIES if city.strip()]
 
 SNOWFLAKE_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT")
 SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER")

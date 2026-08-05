@@ -28,7 +28,7 @@ jobs:
       - name: Fetch weather data from OpenWeatherMap
         env:
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
-          CITY: ${{ secrets.CITY }}
+          CITIES: ${{ secrets.CITIES }}
           # Snowflake env vars are NOT needed for fetch_weather.py, but we pass them anyway for the next step
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
