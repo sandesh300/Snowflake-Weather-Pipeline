@@ -1,0 +1,27 @@
+import requests
+import pandas as pd
+from datetime import datetime
+from config.config import API_KEY, CITY
+
+def fetch_weather():
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
+    response = requests.get(url)
+    response.raise_for_status()   # raise exception for HTTP errors
+    data = response.json()
+
+    record = {
+        "CITY": data["name"],
+        "DATE": datetime.now().strftime("%Y-%m-%d"),
+        "TIME": datetime.now().strftime("%H:%M:%S"),   # for more granularity
+        "TEMPERATURE": data["main"]["temp"],
+        "HUMIDITY": data["main"]["humidity"],
+        "PRESSURE": data["main"]["pressure"],
+        "WIND_SPEED": data["wind"]["speed"],
+        "WEATHER": data["weather"][0]["main"]
+    }
+    df = pd.DataFrame([record])
+    df.to_csv("data/weather_data.csv", index=False)
+    print(f"Weather data for {CITY} saved at {datetime.now()}")
+
+if __name__ == "__main__":
+    fetch_weather()
