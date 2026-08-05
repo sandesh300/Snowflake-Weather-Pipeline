@@ -1,16 +1,24 @@
-import sys
-import os
-# Adds the project root folder to Python's module search path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-import os
+import pandas as pd
 import snowflake.connector
+from snowflake.connector.pandas_tools import write_pandas
+
 from config.config import (
-    SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PASSWORD,
-    SNOWFLAKE_WAREHOUSE, SNOWFLAKE_DATABASE, SNOWFLAKE_SCHEMA
+    SNOWFLAKE_ACCOUNT,
+    SNOWFLAKE_USER,
+    SNOWFLAKE_PASSWORD,
+    SNOWFLAKE_WAREHOUSE,
+    SNOWFLAKE_DATABASE,
+    SNOWFLAKE_SCHEMA,
 )
 
+
 def load_to_snowflake():
+    # Read CSV
+    csv_path = "data/weather_data.csv"
+    df = pd.read_csv(csv_path)
+
+    print(f"Read {len(df)} rows from CSV.")
+
     # Connect to Snowflake
     conn = snowflake.connector.connect(
         account=SNOWFLAKE_ACCOUNT,
@@ -18,35 +26,27 @@ def load_to_snowflake():
         password=SNOWFLAKE_PASSWORD,
         warehouse=SNOWFLAKE_WAREHOUSE,
         database=SNOWFLAKE_DATABASE,
-        schema=SNOWFLAKE_SCHEMA
+        schema=SNOWFLAKE_SCHEMA,
     )
-    cursor = conn.cursor()
 
-    # 1. Upload CSV to stage using PUT
-    csv_path = "data/weather_data.csv"
-    put_cmd = f"PUT file://{os.path.abspath(csv_path)} @WEATHER_STAGE AUTO_COMPRESS=TRUE;"
-    cursor.execute(put_cmd)
-    print("CSV uploaded to stage.")
+    try:
+        success, nchunks, nrows, output = write_pandas(
+            conn=conn,
+            df=df,
+            table_name="WEATHER_RAW",
+            auto_create_table=False,
+            overwrite=False,
+        )
 
-    # 2. Copy into raw table (only load if not already present, using a unique constraint)
-    # We'll use a simple approach: load everything and rely on a unique key later.
-    # For now, we'll load without duplicate check; we'll handle duplicates via task logic.
-    copy_cmd = """
-        COPY INTO WEATHER_RAW
-        FROM @WEATHER_STAGE
-        FILE_FORMAT = (FORMAT_NAME = CSV_FORMAT)
-        ON_ERROR = 'SKIP_FILE';
-    """
-    cursor.execute(copy_cmd)
-    print("Data loaded into WEATHER_RAW.")
+        if success:
+            print(f"Successfully loaded {nrows} rows into WEATHER_RAW.")
+            print(f"Chunks uploaded: {nchunks}")
+        else:
+            print("Data load failed.")
 
-    # 3. (Optional) Remove staged file to keep stage clean
-    remove_cmd = "REMOVE @WEATHER_STAGE;"
-    cursor.execute(remove_cmd)
-    print("Stage cleaned.")
+    finally:
+        conn.close()
 
-    cursor.close()
-    conn.close()
 
 if __name__ == "__main__":
     load_to_snowflake()
