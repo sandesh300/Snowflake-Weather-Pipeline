@@ -25,43 +25,43 @@ A **production-grade data engineering pipeline** that fetches real-time weather 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     OpenWeatherMap API                         │
-│                        (Free Tier)                            │
+│                     OpenWeatherMap API                          │
+│                        (Free Tier)                              │
 └────────────────────┬────────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              GitHub Actions (Scheduled Hourly)                  │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  fetch_weather.py        load_to_snowflake.py           │   │
-│  │  - HTTP Request          - Upload CSV to Stage          │   │
-│  │  - Parse JSON            - COPY INTO Table              │   │
-│  │  - Save to CSV           - Stage Cleanup                │   │
-│  └─────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  fetch_weather.py        load_to_snowflake.py           │    │
+│  │  - HTTP Request          - Upload CSV to Stage          │    │
+│  │  - Parse JSON            - COPY INTO Table              │    │
+│  │  - Save to CSV           - Stage Cleanup                │    │
+│  └─────────────────────────────────────────────────────────┘    │
 └────────────────────┬────────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                      Snowflake Data Cloud                       │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐     │
-│  │ WEATHER_RAW  │───▶│  WEATHER_    │───▶│   Analytics  │     │
-│  │   (Staging)  │    │   CLEAN      │    │   Views      │     │
-│  └──────────────┘    │(Transformed) │    └──────────────┘     │
-│                      └──────────────┘                          │
-│                           ▲                                    │
-│                           │                                    │
-│                     ┌──────────────┐                          │
-│                     │   STREAMS    │                          │
-│                     │  + TASKS     │                          │
-│                     └──────────────┘                          │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐       │
+│  │ WEATHER_RAW  │───▶│  WEATHER_    │───▶│   Analytics │       │
+│  │   (Staging)  │    │   CLEAN      │    │   Views      │       │
+│  └──────────────┘    │(Transformed) │    └──────────────┘       │
+│                      └──────────────┘                           │
+│                           ▲                                     │
+│                           │                                     │
+│                     ┌──────────────┐                            │
+│                     │   STREAMS    │                            │
+│                     │  + TASKS     │                            │
+│                     └──────────────┘                            │
 └────────────────────┬────────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              Streamlit Dashboard (Live Visualization)           │
-│  - Temperature Trends         - Weather Distribution           │
-│  - Humidity & Pressure        - City Filters                   │
-│  - KPI Metrics                - Data Table                     │
+│  - Temperature Trends         - Weather Distribution            │
+│  - Humidity & Pressure        - City Filters                    │
+│  - KPI Metrics                - Data Table                      │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -278,42 +278,4 @@ This project demonstrates:
 
 ---
 
-## 🤝 Contributing
 
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest features
-- Submit pull requests
-
----
-
-## 📧 Connect with Me
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2)](https://linkedin.com/in/your-profile)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717)](https://github.com/your-username)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-FF6B6B)](https://your-portfolio.com)
-
----
-
-## 📝 License
-
-This project is open-source and available under the [MIT License](LICENSE).
-
----
-
-## 🙏 Acknowledgments
-
-- [OpenWeatherMap](https://openweathermap.org/) for free weather API
-- [Snowflake](https://www.snowflake.com/) for cloud data platform
-- [Streamlit](https://streamlit.io/) for easy dashboard creation
-- [GitHub Actions](https://github.com/features/actions) for CI/CD automation
-
----
-
-### ⭐ Show Your Support
-
-If you found this project helpful, please give it a ⭐ on GitHub!
-
----
-
-**Built with ❤️ as a Data Engineering Portfolio Project**
