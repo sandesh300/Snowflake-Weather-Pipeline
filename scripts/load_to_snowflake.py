@@ -2,20 +2,14 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import pandas as pd
 import snowflake.connector
-from snowflake.connector.pandas_tools import write_pandas
 from config.config import (
     SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PASSWORD,
     SNOWFLAKE_WAREHOUSE, SNOWFLAKE_DATABASE, SNOWFLAKE_SCHEMA
 )
 
 def load_to_snowflake():
-    # 1. Read the CSV with all cities
-    df = pd.read_csv("data/weather_data.csv")
-    print(f"Read {len(df)} rows from CSV.")
-
-    # 2. Connect to Snowflake
+    # 1. Connect to Snowflake
     conn = snowflake.connector.connect(
         account=SNOWFLAKE_ACCOUNT,
         user=SNOWFLAKE_USER,
@@ -24,20 +18,33 @@ def load_to_snowflake():
         database=SNOWFLAKE_DATABASE,
         schema=SNOWFLAKE_SCHEMA
     )
+    cursor = conn.cursor()
 
-    # 3. Append directly to the table
-    success, nrows, ncols = write_pandas(
-        conn,
-        df,
-        table_name="WEATHER_RAW",
-        quote_identifiers=False
-    )
+    # 2. Absolute path to CSV
+    csv_path = os.path.abspath("data/weather_data.csv")
+    print(f"Uploading {csv_path} to stage...")
 
-    if success:
-        print(f"✅ Successfully inserted {nrows} rows into WEATHER_RAW.")
-    else:
-        print("❌ Failed to write to Snowflake.")
+    # 3. PUT command – upload to internal stage
+    put_cmd = f"PUT file://{csv_path} @WEATHER_STAGE AUTO_COMPRESS=TRUE;"
+    cursor.execute(put_cmd)
+    print("✅ CSV uploaded to stage.")
 
+    # 4. COPY INTO – load into raw table
+    copy_cmd = """
+        COPY INTO WEATHER_RAW
+        FROM @WEATHER_STAGE
+        FILE_FORMAT = (FORMAT_NAME = CSV_FORMAT)
+        ON_ERROR = 'SKIP_FILE';
+    """
+    cursor.execute(copy_cmd)
+    print("✅ Data loaded into WEATHER_RAW.")
+
+    # 5. Clean up stage (optional)
+    remove_cmd = "REMOVE @WEATHER_STAGE;"
+    cursor.execute(remove_cmd)
+    print("🧹 Stage cleaned.")
+
+    cursor.close()
     conn.close()
 
 if __name__ == "__main__":
