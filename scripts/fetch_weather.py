@@ -17,7 +17,7 @@ def fetch_weather():
     record = {
         "CITY": data["name"],
         "DATE": datetime.now().strftime("%Y-%m-%d"),
-        "TIME": datetime.now().strftime("%H:%M:%S"),   # for more granularity
+        "TIME": datetime.now().strftime("%H:%M:%S"),
         "TEMPERATURE": data["main"]["temp"],
         "HUMIDITY": data["main"]["humidity"],
         "PRESSURE": data["main"]["pressure"],
@@ -25,6 +25,10 @@ def fetch_weather():
         "WEATHER": data["weather"][0]["main"]
     }
     df = pd.DataFrame([record])
+    
+    # ✅ CREATE THE DATA DIRECTORY IF IT DOES NOT EXIST
+    os.makedirs("data", exist_ok=True)
+    
     df.to_csv("data/weather_data.csv", index=False)
     print(f"Weather data for {CITY} saved at {datetime.now()}")
 
